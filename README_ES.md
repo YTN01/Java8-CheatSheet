@@ -1,16 +1,16 @@
 
-# JAVA 8 - Cheat Sheet
+# JAVA 8 - Chuleta
 
-## Lambda Expression
+## Expresión Lambda
 ```java
-(int a) -> a * 2; // Calculate the double of a
-a -> a * 2; // or simply without type
+(int a) -> a * 2; // Calcula el docble de a
+a -> a * 2; // o simplemente sin tipo
 ```
 ```java
-(a, b) -> a + b; // Sum of 2 parameters
+(a, b) -> a + b; // Suma 2 parametros
 ```
 
-If the lambda is more than one expression we can use `{ }` and `return`
+Si lambda tiene mas de una expresión podemos usar `{ }` y `return`
 
 ```java
 (x, y) -> {
@@ -20,34 +20,34 @@ If the lambda is more than one expression we can use `{ }` and `return`
 }
 ```
 
-A lambda expression cannot stand alone in Java, it need to be associated to a functional interface.
+Una expresión lambda no puede usarse sola en Java, necesita estar asociada a un interfaz funcional
 
 ```java
 interface MyMath {
     int getDoubleOf(int a);
 }
 	
-MyMath d = a -> a * 2; // associated to the interface
-d.getDoubleOf(4); // is 8
+MyMath d = a -> a * 2; // asociado a un interfaz
+d.getDoubleOf(4); // es 8
 ```
 
 ---
 
-All examples with "list" use :
+Todos los ejemplos con "list" usan:
 
 ```java
 List<String> list = [Bohr, Darwin, Galilei, Tesla, Einstein, Newton]
 ```
 
 
-## Collections
+## Colecciones
 
 **sort** `sort(list, comparator)`
 
 ```java
 list.sort((a, b) -> a.length() - b.length())
-list.sort(Comparator.comparing(n -> n.length())); // same
-list.sort(Comparator.comparing(String::length)); // same
+list.sort(Comparator.comparing(n -> n.length())); // igual
+list.sort(Comparator.comparing(String::length)); // igual
 //> [Bohr, Tesla, Darwin, Newton, Galilei, Einstein]
 ```
 
@@ -67,30 +67,30 @@ names.put("Albert", "Ein?");
 names.put("Marie", "Curie");
 names.put("Max", "Plank");
 
-// Value "Albert" exists
+// El valor "Albert" existe
 // {Marie=Curie, Max=Plank, Albert=Einstein}
 names.merge("Albert", "stein", (old, val) -> old.substring(0, 3) + val);
 
-// Value "Newname" don't exists
+// El valor  "Newname" no existe
 // {Marie=Curie, Newname=stein, Max=Plank, Albert=Einstein}
 names.merge("Newname", "stein", (old, val) -> old.substring(0, 3) + val);
 ```
 
 
-## Method Expressions `Class::staticMethod`
+## Expresión de metodo `Class::staticMethod`
 
-Allows to reference methods (and constructors) without executing them
+Permite referenciar métodos (y constructores) sin ejecutarlos
 
 ```java
-// Lambda Form:
+// Con Lambda:
 getPrimes(numbers, a -> StaticMethod.isPrime(a));
 
-// Method Reference:
+// Metodo Referenciado:
 getPrimes(numbers, StaticMethod::isPrime);
 ```
 
-| Method Reference | Lambda Form |
-| ---------------- | ----------- |
+| Método Referenciado | Forma de Lambda |
+| ------------------- | --------------- |
 | `StaticMethod::isPrime` | `n -> StaticMethod.isPrime(n)` |
 | `String::toUpperCase`   | `(String w) -> w.toUpperCase()` |
 | `String::compareTo`     | `(String s, String t) -> s.compareTo(t)` |
@@ -101,21 +101,21 @@ getPrimes(numbers, StaticMethod::isPrime);
 
 ## Streams
 
-Similar to collections, but
+Similares a las colecciones, pero:
 
- - They don't store their own data
- - The data comes from elsewhere (collection, file, db, web, ...)
- - *immutable* (produce new streams)
- - *lazy* (only computes what is necessary !)
+ - No almacenan su propia información
+ - La información viene de otra parte (colleciones, archivos, db, web, ...)
+ - *immutable* (crean un nuevo stream)
+ - *lazy* (solo computa lo que es necesario !)
  
 ```java
-// Will compute just 3 "filter"
+// Computara 3 "filter"
 Stream<String> longNames = list
    .filter(n -> n.length() > 8)
    .limit(3);
 ```
 
-**Create a new stream**
+**Crea un nuevo stream**
 
 ```java
 Stream<Integer> stream = Stream.of(1, 2, 3, 5, 7, 11);
@@ -123,29 +123,30 @@ Stream<String> stream = Stream.of("Jazz", "Blues", "Rock");
 Stream<String> stream = Stream.of(myArray); // or from an array
 list.stream(); // or from a list
 
-// Infinit stream [0; inf[
+// Stream infinito [0; inf[
 Stream<Integer> integers = Stream.iterate(0, n -> n + 1);
 ```
 
-**Collecting results**
+**Resultado de las colecciones**
 
 ```java
 // Collect into an array (::new is the constructor reference)
+// Colecciona en un array (::new es la referencia del contructor)
 String[] myArray = stream.toArray(String[]::new);
 
-// Collect into a List or Set
+// Collecciona en un List o Set
 List<String> myList = stream.collect(Collectors.toList());
 Set<String> mySet = stream.collect(Collectors.toSet());
 
-// Collect into a String
+// Collecciona en un String
 String str = list.collect(Collectors.joining(", "));
 ```
 
 **map** `map(mapper)`<br>
-Applying a function to each element
+Aplica una función a cada elemento
 
 ```java
-// Apply "toLowerCase" for each element
+// Aplica "toLowerCase" a cada elemento
 res = stream.map(w -> w.toLowerCase());
 res = stream.map(String::toLowerCase);
 //> bohr darwin galilei tesla einstein newton
@@ -154,11 +155,11 @@ res = Stream.of(1,2,3,4,5).map(x -> x + 1);
 //> 2 3 4 5 6
 ```
 
-**filter** `filter(predicate)`<br>
-Retains elements that match the predicate
+**filter** `filter(predicado)`<br>
+Retiene elementos que coinciden con el predicado
 
 ```java
-// Filter elements that begin with "E"
+// Filtra elementos que empiecen con "E"
 res = stream.filter(n -> n.substring(0, 1).equals("E"));
 //> Einstein
 
@@ -167,7 +168,7 @@ res = Stream.of(1,2,3,4,5).filter(x -> x < 3);
 ```
 
 **reduce**<br>
-Reduce the elements to a single value
+Reduce los elementos a un unico valor
 
 ```java
 String reduced = stream
@@ -176,7 +177,7 @@ String reduced = stream
 ```
 
 **limit** `limit(maxSize)`
-The n first elements
+Los n primeros elementos
 
 ```java
 res = stream.limit(3);
@@ -184,7 +185,7 @@ res = stream.limit(3);
 ```
 
 **skip**
-Discarding the first n elements
+Descarta los primeros n elementos
 
 ```java
 res = strem.skip(2); // skip Bohr and Darwin
@@ -192,7 +193,7 @@ res = strem.skip(2); // skip Bohr and Darwin
 ```
 
 **distinct**
-Remove duplicated elemetns
+Borra los elementos repetidos
 
 ```java
 res = Stream.of(1,0,0,1,0,1).distinct();
@@ -200,7 +201,7 @@ res = Stream.of(1,0,0,1,0,1).distinct();
 ```
 
 **sorted**
-Sort elements (must be *Comparable*)
+Ordena elementos (debe ser *Comparable*)
 
 ```java
 res = stream.sorted();
@@ -210,42 +211,42 @@ res = stream.sorted();
 **allMatch**
 
 ```java
-// Check if there is a "e" in each elements
+// Comprueba si hay una "e" en cada elemento
 boolean res = words.allMatch(n -> n.contains("e"));
 ```
 
-anyMatch: Check if there is a "e" in an element<br>
-noneMatch: Check if there is no "e" in elements
+anyMatch: Comprueba si hay una "e" en algun elemento<br>
+noneMatch: Comprueba si no hay una "e" en ningun elemento
 
 **parallel**
-Returns an equivalent stream that is parallel
+Devuelve un stream equivalente que es paralelo
 
 **findAny**
-faster than findFirst on parallel streams
+Mas rapido que findFirst en un stream paralelo
 
-### Primitive-Type Streams
+### Streams de tipo primitivo
 
-Wrappers (like Stream<Integer>) are inefficients. It requires a lot of unboxing and boxing for each element. Better to use `IntStream`, `DoubleStream`, etc.
+Los wrappers (como Stream<Integer>) son ineficientes. Requieren de embalar y desembalar cada elemento demasiado. Mejor usar `IntStream`, `DoubleStream`, etc.
 
-**Creation**
+**Creacion**
 
 ```java
 IntStream stream = IntStream.of(1, 2, 3, 5, 7);
-stream = IntStream.of(myArray); // from an array
-stream = IntStream.range(5, 80); // range from 5 to 80
+stream = IntStream.of(myArray); // de un array
+stream = IntStream.range(5, 80); // rango de 5 a 80
 
 Random gen = new Random();
-IntStream rand = gen(1, 9); // stream of randoms
+IntStream rand = gen(1, 9); // stream de aleatorios
 ```
 
-Use *mapToX* (mapToObj, mapToDouble, etc.) if the function yields Object, double, etc. values.
+Usa *mapToX* (mapToObj, mapToDouble, etc.) si la función produce un valor Object, double, etc.
 
-### Grouping Results
+### Resultados agrupados
 
 **Collectors.groupingBy**
 
 ```java
-// Groupe by length
+// Agrupados por longitud
 Map<Integer, List<String>> groups = stream
 	.collect(Collectors.groupingBy(w -> w.length()));
 //> 4=[Bohr], 5=[Tesla], 6=[Darwin, Newton], ...
@@ -254,31 +255,31 @@ Map<Integer, List<String>> groups = stream
 **Collectors.toSet**
 
 ```java
-// Same as before but with Set
+// Igual que antes pero en un Set
 ... Collectors.groupingBy(
 	w -> w.substring(0, 1), Collectors.toSet()) ...
 ```
 
 **Collectors.counting**
-Count the number of values in a group
+Cuenta el numero de elementos en una coleccion
 
 **Collectors.summing__**
-`summingInt`, `summingLong`, `summingDouble` to sum group values
+`summingInt`, `summingLong`, `summingDouble` para sumar valores de un grupo
 
 **Collectors.averaging__**
 `averagingInt`, `averagingLong`, ... 
 
 ```java
-// Average length of each element of a group
+// Longitud promedio de cada elemento de un grupo
 Collectors.averagingInt(String::length)
 ```
 
-*PS*: Don't forget Optional (like `Map<T, Optional<T>>`) with some Collection methods (like `Collectors.maxBy`).
+*PS*: No olvides Optional (como `Map<T, Optional<T>>`) con algunos metodos de Colecciones (like `Collectors.maxBy`).
 
 
-### Parallel Streams
+### Streams Paralelos
 
-**Creation**
+**Creacion**
 
 ```java
 Stream<String> parStream = list.parallelStream();
@@ -286,33 +287,33 @@ Stream<String> parStream = Stream.of(myArray).parallel();
 ```
 
 **unordered**
-Can speed up the `limit` or `distinct`
+Pueden acelerar el `limit` o `distinct`
 
 ```java
 stream.parallelStream().unordered().distinct();
 ```
 
-*PS*: Work with the streams library. Eg. use `filter(x -> x.length() < 9)` instead of a `forEach` with an `if`.
 
+*PS*: Trabaja con la librería de streams. Pe: usa `filter(x -> x.length() < 9)` en vez de `forEach` con un`if`.
 
 ## Optional
-In Java, it is common to use null to denote absence of result.
-Problems when no checks: `NullPointerException`.
+En Java, es común usar null para denotar ausencia de resultado.
+Problemas cuando no se comprueban: `NullPointerException`.
 
 ```java
-// Optional<String> contains a string or nothing
+// Optional<String> contiene un string o nada
 Optional<String> res = stream
    .filter(w -> w.length() > 10)
    .findFirst();
 
-// length of the value or "" if nothing
+// longitud de res o "", si no trae nada
 int length = res.orElse("").length();
 
-// run the lambda if there is a value
+// lanza el lambda si no trae nada
 res.ifPresent(v -> results.add(v));
 ```
 
-Return an Optional
+Devuelve un Optional
 
 ```java
 Optional<Double> squareRoot(double x) {
@@ -323,7 +324,7 @@ Optional<Double> squareRoot(double x) {
 
 ---
 
-**Note on inferance limitations**
+**Note en la inferencia de la limitación**
 
 ```java
 interface Pair<A, B> {
@@ -332,16 +333,16 @@ interface Pair<A, B> {
 }
 ```
 
-A steam of type `Stream<Pair<String, Long>>` :
+Un stream de tipo `Stream<Pair<String, Long>>` :
 
- - `stream.sorted(Comparator.comparing(Pair::first)) // ok`
- - `stream.sorted(Comparator.comparing(Pair::first).thenComparing(Pair::second)) // dont work`
+ - `stream.sorted(Comparator.comparing(Pair::first)) // vale`
+ - `stream.sorted(Comparator.comparing(Pair::first).thenComparing(Pair::second)) // no funciona`
 
-Java cannot infer type for the `.comparing(Pair::first)` part and fallback to Object, on which `Pair::first` cannot be applied.
+Java no puede inferir el tipo para la parte de `.comparing(Pair::first)`y devolver el Objeto, por lo que `Pair::first` no podría ser aplicado.
 
-The required type for the whole expression cannot be propagated through the method call (`.thenComparing`) and used to infer type of the first part.
+El tipo requerido para toda la expresión no puede ser propagada a través de la llamada del método (`.thenComparing`) y  ser usada para inferir el tipo de la primera parte.
 
-Type *must* be given explicitly.
+El tipo *debe* ser dado explicitamente
 
 ```java
 stream.sorted(
@@ -352,5 +353,5 @@ stream.sorted(
 
 ---
 
-This cheat sheet was based on the lecture of Cay Horstmann
+Esta cheat sheet esta basada en la lección de Cay Horstmann
 http://horstmann.com/heig-vd/spring2015/poo/

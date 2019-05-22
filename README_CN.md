@@ -1,16 +1,16 @@
 
-# JAVA 8 - Cheat Sheet
+# JAVA 8 - 备忘录
 
-## Lambda Expression
+## Lambda 表达式
 ```java
-(int a) -> a * 2; // Calculate the double of a
-a -> a * 2; // or simply without type
+(int a) -> a * 2; // 求a乘以2后的值
+a -> a * 2; // 或者更直接的去掉类型也是可以的
 ```
 ```java
-(a, b) -> a + b; // Sum of 2 parameters
+(a, b) -> a + b; // 相加
 ```
 
-If the lambda is more than one expression we can use `{ }` and `return`
+如果lambda里面的代码块超过1行，可以配合使用 `{ }` 加 `return`来处理
 
 ```java
 (x, y) -> {
@@ -20,34 +20,34 @@ If the lambda is more than one expression we can use `{ }` and `return`
 }
 ```
 
-A lambda expression cannot stand alone in Java, it need to be associated to a functional interface.
+一个lamdba表达式必须依赖一个具体的功能接口而存在
 
 ```java
 interface MyMath {
     int getDoubleOf(int a);
 }
 	
-MyMath d = a -> a * 2; // associated to the interface
+MyMath d = a -> a * 2; // 关联到具体的接口实现
 d.getDoubleOf(4); // is 8
 ```
 
 ---
 
-All examples with "list" use :
+下面所有的测试都是用到这个`list` :
 
 ```java
 List<String> list = [Bohr, Darwin, Galilei, Tesla, Einstein, Newton]
 ```
 
 
-## Collections
+## Collections 集合
 
 **sort** `sort(list, comparator)`
 
 ```java
 list.sort((a, b) -> a.length() - b.length())
-list.sort(Comparator.comparing(n -> n.length())); // same
-list.sort(Comparator.comparing(String::length)); // same
+list.sort(Comparator.comparing(n -> n.length())); // 使用具体Comparator接口实现
+list.sort(Comparator.comparing(String::length)); // 这样写和上面也是一样的
 //> [Bohr, Tesla, Darwin, Newton, Galilei, Einstein]
 ```
 
@@ -67,25 +67,25 @@ names.put("Albert", "Ein?");
 names.put("Marie", "Curie");
 names.put("Max", "Plank");
 
-// Value "Albert" exists
+//  "Albert" 这个值是存在的 就命中了后面处理流程
 // {Marie=Curie, Max=Plank, Albert=Einstein}
 names.merge("Albert", "stein", (old, val) -> old.substring(0, 3) + val);
 
-// Value "Newname" don't exists
+// "Newname" 这个值是不存在的 所以后面的流程就不处理
 // {Marie=Curie, Newname=stein, Max=Plank, Albert=Einstein}
 names.merge("Newname", "stein", (old, val) -> old.substring(0, 3) + val);
 ```
 
 
-## Method Expressions `Class::staticMethod`
+## 方法引用 `Class::staticMethod` 
 
-Allows to reference methods (and constructors) without executing them
+允许引用类方法或者构造函数，引用时候是不执行的
 
 ```java
-// Lambda Form:
+//通过lamdba
 getPrimes(numbers, a -> StaticMethod.isPrime(a));
 
-// Method Reference:
+//通过应用方法:
 getPrimes(numbers, StaticMethod::isPrime);
 ```
 
@@ -99,53 +99,58 @@ getPrimes(numbers, StaticMethod::isPrime);
 | `String[]::new`         | `(int n) -> new String[n]` |
 
 
-## Streams
+## Streams 流式处理
 
-Similar to collections, but
+和`collections`类似, 但有所不同
 
- - They don't store their own data
- - The data comes from elsewhere (collection, file, db, web, ...)
- - *immutable* (produce new streams)
- - *lazy* (only computes what is necessary !)
+ - 不能储存数据
+ - 数据来源外部例如 (collection, file, db, web, ...)
+ - `immutable`不可变性，不影响外部数据 (因为产生了一个新的stream)
+ - `lazy`懒式处理 (只有在计算的时候才用到，不处理不用 !)
  
 ```java
-// Will compute just 3 "filter"
+// 仅仅计算前3个"filter"
 Stream<String> longNames = list
    .filter(n -> n.length() > 8)
    .limit(3);
 ```
 
-**Create a new stream**
+**创建一个stream**
 
 ```java
 Stream<Integer> stream = Stream.of(1, 2, 3, 5, 7, 11);
 Stream<String> stream = Stream.of("Jazz", "Blues", "Rock");
-Stream<String> stream = Stream.of(myArray); // or from an array
-list.stream(); // or from a list
+Stream<String> stream = Stream.of(myArray); // 通过数组
+list.stream(); // 通过list
 
 // Infinit stream [0; inf[
 Stream<Integer> integers = Stream.iterate(0, n -> n + 1);
 ```
 
-**Collecting results**
+**集合结果集**
 
 ```java
-// Collect into an array (::new is the constructor reference)
+//返回成一个数组 (::new 是构造函数的引用)
 String[] myArray = stream.toArray(String[]::new);
 
-// Collect into a List or Set
+// 返回成list或set
 List<String> myList = stream.collect(Collectors.toList());
 Set<String> mySet = stream.collect(Collectors.toSet());
 
-// Collect into a String
+// 返回成String
 String str = list.collect(Collectors.joining(", "));
+
+//返回成一个LinkedHashMap
+list.stream().collect(Collectors.toMap(k -> k, v -> v, (a, b) -> a, LinkedHashMap::new));
+//默认转换成HashMap
+list.stream().collect(Collectors.toMap(k -> k, v -> v));
 ```
 
 **map** `map(mapper)`<br>
-Applying a function to each element
+对每个元素进行类型转换
 
 ```java
-// Apply "toLowerCase" for each element
+// 对每个元素使用 "toLowerCase" 处理
 res = stream.map(w -> w.toLowerCase());
 res = stream.map(String::toLowerCase);
 //> bohr darwin galilei tesla einstein newton
@@ -155,10 +160,10 @@ res = Stream.of(1,2,3,4,5).map(x -> x + 1);
 ```
 
 **filter** `filter(predicate)`<br>
-Retains elements that match the predicate
+过滤处理，只保留匹配到的元素
 
 ```java
-// Filter elements that begin with "E"
+// 过掉保留 "E" 开头的元素
 res = stream.filter(n -> n.substring(0, 1).equals("E"));
 //> Einstein
 
@@ -167,7 +172,7 @@ res = Stream.of(1,2,3,4,5).filter(x -> x < 3);
 ```
 
 **reduce**<br>
-Reduce the elements to a single value
+汇聚处理成为单一返回结果
 
 ```java
 String reduced = stream
@@ -176,7 +181,7 @@ String reduced = stream
 ```
 
 **limit** `limit(maxSize)`
-The n first elements
+保留前`maxSize`个元素
 
 ```java
 res = stream.limit(3);
@@ -184,15 +189,15 @@ res = stream.limit(3);
 ```
 
 **skip**
-Discarding the first n elements
+忽略掉前`n`个元素
 
 ```java
-res = strem.skip(2); // skip Bohr and Darwin
+res = strem.skip(2); // 忽略 Bohr 和 Darwin
 //> Galilei Tesla Einstein Newton
 ```
 
 **distinct**
-Remove duplicated elemetns
+去重
 
 ```java
 res = Stream.of(1,0,0,1,0,1).distinct();
@@ -200,7 +205,7 @@ res = Stream.of(1,0,0,1,0,1).distinct();
 ```
 
 **sorted**
-Sort elements (must be *Comparable*)
+排序 (必须使用 *Comparable* 接口)
 
 ```java
 res = stream.sorted();
@@ -208,44 +213,44 @@ res = stream.sorted();
 ```
 
 **allMatch**
-
+全匹配
 ```java
-// Check if there is a "e" in each elements
+// 检查是否每个元素都是“e”开头
 boolean res = words.allMatch(n -> n.contains("e"));
 ```
 
-anyMatch: Check if there is a "e" in an element<br>
-noneMatch: Check if there is no "e" in elements
+`anyMatch`: 只要其中一个元素包含"e"即可 <br>
+`noneMatch`: 元素里面是否没有"e" 
 
 **parallel**
-Returns an equivalent stream that is parallel
+返回一个并行的stream
 
 **findAny**
-faster than findFirst on parallel streams
+在并行流上findFirst执行更快
 
-### Primitive-Type Streams
+### 原始类型的 Streams
 
-Wrappers (like Stream<Integer>) are inefficients. It requires a lot of unboxing and boxing for each element. Better to use `IntStream`, `DoubleStream`, etc.
+原子类型的stream自动封装是低效的 (例如 Stream<Integer>) ，因为它需要对每个元素进行大量拆箱和装箱. 所以最好使用 `IntStream`, `DoubleStream`, 等等.
 
-**Creation**
+**初始化**
 
 ```java
 IntStream stream = IntStream.of(1, 2, 3, 5, 7);
-stream = IntStream.of(myArray); // from an array
-stream = IntStream.range(5, 80); // range from 5 to 80
+stream = IntStream.of(myArray); // 通过数组
+stream = IntStream.range(5, 80); //  5 到 80范围
 
 Random gen = new Random();
 IntStream rand = gen(1, 9); // stream of randoms
 ```
 
-Use *mapToX* (mapToObj, mapToDouble, etc.) if the function yields Object, double, etc. values.
+使用 *mapToX* (mapToObj, mapToDouble, mapToLong) 如果需要把字段转换成 Object, double, long的话. values.
 
-### Grouping Results
+### Grouping 数据集
 
 **Collectors.groupingBy**
 
 ```java
-// Groupe by length
+// 通过长度分组
 Map<Integer, List<String>> groups = stream
 	.collect(Collectors.groupingBy(w -> w.length()));
 //> 4=[Bohr], 5=[Tesla], 6=[Darwin, Newton], ...
@@ -254,65 +259,64 @@ Map<Integer, List<String>> groups = stream
 **Collectors.toSet**
 
 ```java
-// Same as before but with Set
+// 和之前一样但是使用的是Set
 ... Collectors.groupingBy(
 	w -> w.substring(0, 1), Collectors.toSet()) ...
 ```
 
-**Collectors.counting**
-Count the number of values in a group
+**Collectors.counting**  
+获取元素总算
 
-**Collectors.summing__**
-`summingInt`, `summingLong`, `summingDouble` to sum group values
+**Collectors.summing__**  
+`summingInt`, `summingLong`, `summingDouble` 计算所有元素值相加后结果
 
-**Collectors.averaging__**
-`averagingInt`, `averagingLong`, ... 
+**Collectors.averaging__** 
+`averagingInt`, `averagingLong`, ...
 
 ```java
-// Average length of each element of a group
+// 计算平均数
 Collectors.averagingInt(String::length)
 ```
 
-*PS*: Don't forget Optional (like `Map<T, Optional<T>>`) with some Collection methods (like `Collectors.maxBy`).
+*PS*: 另外不要忘记 Optional (例如 `Map<T, Optional<T>>`) 有同样的处理方法 (例如 `Collectors.maxBy`).
 
 
-### Parallel Streams
+### 并行 Streams 
 
-**Creation**
+**创建一个并行处理的stream**
 
 ```java
 Stream<String> parStream = list.parallelStream();
 Stream<String> parStream = Stream.of(myArray).parallel();
 ```
 
-**unordered**
-Can speed up the `limit` or `distinct`
+**unordered** 
+能提高计算 `limit`，`distinct`的速度
 
 ```java
 stream.parallelStream().unordered().distinct();
 ```
 
-*PS*: Work with the streams library. Eg. use `filter(x -> x.length() < 9)` instead of a `forEach` with an `if`.
+*PS*: 使用streams类库, 例如使用 `filter(x -> x.length() < 9)` 代替 `forEach` 和 `if`
 
 
 ## Optional
-In Java, it is common to use null to denote absence of result.
-Problems when no checks: `NullPointerException`.
+在Java, 通常使用`null`表示没有结果，但是如果不检查的话很容易出现`NullPointerException`.
 
 ```java
-// Optional<String> contains a string or nothing
+// Optional<String> 包含一个string和空
 Optional<String> res = stream
    .filter(w -> w.length() > 10)
    .findFirst();
 
-// length of the value or "" if nothing
+// 返回元素长度或者返回 "" 如果没有的话
 int length = res.orElse("").length();
 
-// run the lambda if there is a value
+// 使用lambda作为一个返回值
 res.ifPresent(v -> results.add(v));
 ```
 
-Return an Optional
+返回一个 Optional
 
 ```java
 Optional<Double> squareRoot(double x) {
@@ -323,7 +327,7 @@ Optional<Double> squareRoot(double x) {
 
 ---
 
-**Note on inferance limitations**
+**注意引用推测限制**
 
 ```java
 interface Pair<A, B> {
@@ -332,25 +336,24 @@ interface Pair<A, B> {
 }
 ```
 
-A steam of type `Stream<Pair<String, Long>>` :
+一个 steam 类型 `Stream<Pair<String, Long>>` :
 
- - `stream.sorted(Comparator.comparing(Pair::first)) // ok`
- - `stream.sorted(Comparator.comparing(Pair::first).thenComparing(Pair::second)) // dont work`
+ - `stream.sorted(Comparator.comparing(Pair::first)) // 有效`
+ - `stream.sorted(Comparator.comparing(Pair::first).thenComparing(Pair::second)) // 无效`
 
-Java cannot infer type for the `.comparing(Pair::first)` part and fallback to Object, on which `Pair::first` cannot be applied.
+Java不能通过 `.comparing(Pair::first)`回调过来的数据来判断类型, 故 `Pair::first` 就不能这样用了
 
-The required type for the whole expression cannot be propagated through the method call (`.thenComparing`) and used to infer type of the first part.
-
-Type *must* be given explicitly.
+如果需要使用泛型接口的话需要显示写清楚，否则无效
 
 ```java
 stream.sorted(
     Comparator.<Pair<String, Long>, String>comparing(Pair::first)
     .thenComparing(Pair::second)
-) // ok
+) // 有效
 ```
 
 ---
 
 This cheat sheet was based on the lecture of Cay Horstmann
 http://horstmann.com/heig-vd/spring2015/poo/
+
